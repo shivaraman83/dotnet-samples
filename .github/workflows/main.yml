@@ -16,6 +16,7 @@ jobs:
       Solution_Name: safe-efficient-code.sln                      # Replace with your solution name, i.e. MyWpfApp.sln.
       #Wap_Project_Directory: Satellite-Packages    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       #Wap_Project_Path: Satellite-Packages/ClassLibrary                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      REPO_NAME : sample-nuget
 
     steps:
     - name: Checkout
@@ -53,15 +54,12 @@ jobs:
         jf dotnetc --repo-resolve=$REPO_NAME
        
     - name: Build & Publish
-      env:
-        REPO_NAME : sample-nuget
       run: | 
         cd ./csharp/safe-efficient-code 
         jf dotnet restore --module safecode-dotnet
         jf dotnet pack --module safecode-dotnet
         jf rt u -flat=true ref-readonly-struct/bin/Debug/ref-readonly-struct.1.0.0.nupkg $REPO_NAME/safecode-dotnet/ --module safecode-dotnet
         jf rt u -flat=true benchmark/bin/Debug/benchmark.1.0.0.nupkg $REPO_NAME/safecode-dotnet/ --module safecode-dotnet
-        ##jf rt u –flat=true  sample-nuget/safecode-dotnet/ --module safecode-dotnet
         jf rt bce 
         jf rt bag 
         jf rt bp 
