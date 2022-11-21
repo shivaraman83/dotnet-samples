@@ -53,11 +53,13 @@ jobs:
         jf dotnetc --repo-resolve=$REPO_NAME
        
     - name: Build & Publish
+      env:
+        REPO_NAME : sample-nuget
       run: | 
         cd ./csharp/safe-efficient-code 
         jf dotnet restore --module safecode-dotnet
         jf dotnet pack --module safecode-dotnet
-        jf rt u -flat=true ref-readonly-struct/bin/Debug/ref-readonly-struct.1.0.0.nupkg sample-nuget/safecode-dotnet/ --module safecode-dotnet
+        jf rt u -flat=true ref-readonly-struct/bin/Debug/ref-readonly-struct.1.0.0.nupkg $REPO_NAME/safecode-dotnet/ --module safecode-dotnet
         # jf rt u –flat=true benchmark/bin/Debug/benchmark.1.0.0.nupkg sample-nuget/safecode-dotnet/ --module safecode-dotnet
         jf rt bce 
         jf rt bag 
