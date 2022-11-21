@@ -54,7 +54,7 @@ jobs:
        
     - name: Build & Publish
       run: | 
-        cd csharp/safe-efficient-code 
+        cd ./csharp/safe-efficient-code 
         jf dotnet restore --module safecode-dotnet
         jf dotnet pack --module safecode-dotnet
         jf rt u -flat=true ref-readonly-struct/bin/Debug/ref-readonly-struct.1.0.0.nupkg $REPO_NAME/safecode-dotnet-sample/ --module safecode-dotnet
