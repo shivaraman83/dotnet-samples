@@ -1,4 +1,4 @@
-name: .NET build sample
+name: sample dotnet-build
 
 on:
   push:
