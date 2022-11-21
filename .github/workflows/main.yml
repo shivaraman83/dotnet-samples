@@ -1,0 +1,71 @@
+name: .NET build sample
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    env:
+      Solution_Name: safe-efficient-code.sln                      # Replace with your solution name, i.e. MyWpfApp.sln.
+      #Wap_Project_Directory: Satellite-Packages    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
+      #Wap_Project_Path: Satellite-Packages/ClassLibrary                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    #- name: Setup MSBuild.exe
+      #uses: microsoft/setup-msbuild@v1.0.2
+
+    # Execute all unit tests in the solution
+    #- name: Execute unit tests
+      #run: dotnet test
+      
+    - name: Setup JFrog CLI
+      uses: jfrog/setup-jfrog-cli@v3
+      env:
+        JF_ENV_1: ${{ secrets.JF_SECRET_ENV_1 }}
+        
+    - name: Ping JFrog CLI
+      run: jf rt ping
+
+    - name: Setup nuget Config
+      env:
+        REPO_NAME : sample-nuget
+      run: |
+        cd csharp\safe-efficient-code
+        jf dotnetc --repo-resolve=$REPO_NAME
+       
+    - name: Build & Publish
+      run: | 
+        cd csharp\safe-efficient-code 
+        jf dotnet restore --module safecode-dotnet
+        jf dotnet pack --module safecode-dotnet
+        jf rt u -flat=true ref-readonly-struct/bin/Debug/ref-readonly-struct.1.0.0.nupkg $REPO_NAME/safecode-dotnet-sample/ --module safecode-dotnet
+        jf rt u –flat=true benchmark/bin/Debug/benchmark.1.0.0.nupkg $REPO_NAME/safecode-dotnet-sample/ --module safecode-dotnet
+        jf rt bce 
+        jf rt bag 
+        jf rt bp 
+
+        
+
+
+
+
+ 
