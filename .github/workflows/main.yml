@@ -47,8 +47,6 @@ jobs:
       run: jf rt ping
 
     - name: Setup nuget Config
-      env:
-        REPO_NAME : sample-nuget
       run: |
         cd ./csharp/safe-efficient-code
         jf dotnetc --repo-resolve=$REPO_NAME
@@ -65,7 +63,9 @@ jobs:
         jf rt bp 
 
         
-
+    - name: Xray scan
+      run: |
+        jf bs --fail=false
 
 
 
